@@ -14,7 +14,7 @@ Created on Tue Feb  1 11:09:50 2022
 """
 
 
-from matplotlib import pyplot   as plt
+from matplotlib import pyplot as plt
 import numpy as np 
 from PIL import Image as im   
 
@@ -40,7 +40,7 @@ seed = np.array([1,0,1,0,0,1,1,1,0,1,0,1,0,1,1,1]) #initial state
 img = im.open("ISAE_Logo_SEIS_clr_new.png") 
 img_eval= np.array(img) 
 image_trunc = img_eval 
-# pyplot.imshow(image_trunc) 
+plt.imshow(image_trunc) 
 
 # Initializations 
 image_rec_plane = np.zeros((200,200,3),dtype=np.uint8)
@@ -94,5 +94,4 @@ for i_plane in range(0,3):
 # Recovering the image from the array of YCbCr
 image_rec = im.fromarray(image_rec_plane) 
 # Plot the image 
-plt.imshow(image_rec) 
- 
+plt.imshow(image_rec)
