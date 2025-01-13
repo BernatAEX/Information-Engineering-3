@@ -14,7 +14,7 @@ Created on Tue Feb  1 11:09:50 2022
 """
 
 
-from matplotlib import pyplot   as plt
+from matplotlib import pyplot as plt
 import numpy as np 
 from PIL import Image as im   
 
@@ -94,5 +94,4 @@ for i_plane in range(0,3):
 # Recovering the image from the array of YCbCr
 image_rec = im.fromarray(image_rec_plane) 
 # Plot the image 
-plt.imshow(image_rec) 
- 
+plt.imshow(image_rec)
