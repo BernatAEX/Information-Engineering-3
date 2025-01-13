@@ -25,7 +25,7 @@ def LFSR(N,c,seed):
     for i in range(0,N): 
         next_bit = np.mod(np.sum(c*state),2)
         LFSR_output[i] = state[m-1]
-        state = np.concatenate( (np.array([next_bit]) , state[0:m-1]))
+        state = np.concatenate((np.array([next_bit]) , state[0:m-1]))
     return LFSR_output  
 
 c = np.array([0,0,0,1,0,0,0,0,0,0,0,0,1,0,1,1]) # connections vector
@@ -40,7 +40,7 @@ seed = np.array([1,0,1,0,0,1,1,1,0,1,0,1,0,1,1,1]) #initial state
 img = im.open("ISAE_Logo_SEIS_clr_new.png") 
 img_eval= np.array(img) 
 image_trunc = img_eval 
-# pyplot.imshow(image_trunc) 
+#pyplot.imshow(image_trunc) 
 
 # Initializations 
 image_rec_plane = np.zeros((200,200,3),dtype=np.uint8)
