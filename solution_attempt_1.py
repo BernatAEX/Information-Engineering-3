@@ -102,7 +102,7 @@ def visualize_image(image_bits):
         ctr = 0
         for i in range(0,200):
             for j in range(0,200):
-                image_rec_plane[i,j,i_plane] = (np.sum(image_binary_decrypt_plane[ctr:ctr+8,i_plane]*np.array([128,64,32,16,8,4,2,1]))) 
+                image_rec_plane[i,j,i_plane] = np.sum(image_binary_decrypt_plane[ctr:ctr+8,i_plane]*np.array([128,64,32,16,8,4,2,1]))
                 ctr += 8
 
     # Recovering the image from the array of YCbCr
@@ -137,17 +137,17 @@ def detect_segment16(lis):
     return -1
 
 
-def decode(coded_image, state_equation, seed):
-
+def decode(coded_image_o, state_equation, seed, reduction):
+    coded_image = coded_image_o[:int(len(coded_image_o)/(reduction**2))]
     cypher_rec = LFSR(np.size(coded_image), state_equation,seed)
 
     image_binary_decrypt = np.mod(coded_image+cypher_rec,2) 
-    image_rec_plane = np.zeros((200,200,3),dtype=np.uint8)
-    image_binary_decrypt_plane = np.reshape(image_binary_decrypt, (200*200*8,3)) 
+    image_rec_plane = np.zeros((int(200/reduction),int(200/reduction),3),dtype=np.uint8)
+    image_binary_decrypt_plane = np.reshape(image_binary_decrypt, (int(200/reduction)*int(200/reduction)*8,3)) 
     for i_plane in range(0,3):     
         ctr = 0
-        for i in range(0, 200):
-            for j in range(0, 200):
+        for i in range(0, int(200/reduction)):
+            for j in range(0, int(200/reduction)):
                 image_rec_plane[i,j,i_plane] = (np.sum(image_binary_decrypt_plane[ctr:ctr+8,i_plane]*np.array([128,64,32,16,8,4,2,1]))) 
                 ctr += 8
 
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     potential_seed = total_code[0][:16]
     print(potential_seed)
 
-    output_image, _ = decode(total_code[0], c, potential_seed)
+    output_image, _ = decode(total_code[0], c, potential_seed, 1)
 
     plt.imshow(output_image)
     plt.show()
@@ -187,15 +187,9 @@ if __name__ == "__main__":
     for i in tqdm(range(int(2**16)), desc='Processing'):
         try_seed = genSeed(i)
 
-        _, entropy_try = decode(total_code[0], c, try_seed)
+        _, entropy_try = decode(total_code[0], c, try_seed, reduction=10)
         if entropy_try < min_entropy:
             min_entropy = entropy_try
             opt_seed = try_seed
 
         os.system('cls')
-        
-    
-    
-    
-
-
