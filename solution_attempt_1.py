@@ -29,6 +29,16 @@ def LFSR(N,c,seed):
         state = np.concatenate((np.array([next_bit]) , state[0:m-1]))
     return LFSR_output  
 
+def entropy(frequencies: Dict[int, float]) -> float:
+    total_count = sum(frequencies.values())
+    entropy_value = 0
+
+    for _, freq in frequencies.items():
+        p_i = freq / total_count
+        if p_i > 0:
+            entropy_value -= p_i * log2(p_i)
+
+    return entropy_value
 
     
 def xor_func(im_1,im_2):
