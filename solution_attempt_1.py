@@ -174,9 +174,11 @@ if __name__ == "__main__":
     print(position)
 
     potential_seed = total_code[0][:16]
+    potential_seed = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1])
+    #potential_seed = np.array([0, 0, 0, 0, 0, 0, 1, 1,0, 1, 1, 1, 0, 1, 0, 1])
     print(potential_seed)
 
-    output_image, _ = decode(total_code[0], c, potential_seed, 1)
+    output_image, _ = decode(total_code[2], c, potential_seed, 1)
 
     plt.imshow(output_image)
     plt.show()
@@ -184,12 +186,14 @@ if __name__ == "__main__":
 
     min_entropy = np.inf
     opt_seed = None
-    for i in tqdm(range(int(2**16)), desc='Processing'):
+    for i in tqdm(range(1,int(2**16)), position=0, leave=True):
         try_seed = genSeed(i)
 
-        _, entropy_try = decode(total_code[0], c, try_seed, reduction=10)
+        _, entropy_try = decode(total_code[0], c, try_seed, reduction=40)
         if entropy_try < min_entropy:
             min_entropy = entropy_try
             opt_seed = try_seed
-
-        os.system('cls')
+       
+        #os.system('cls')
+    print(opt_seed)
+    print(min_entropy)
