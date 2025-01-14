@@ -89,23 +89,12 @@ def detect_segment16(lis):
 if __name__ == "__main__":
     c = np.array([0,0,0,1,0,0,0,0,0,0,0,0,1,0,1,1]) # connections vector
     seed = np.array([1,0,1,0,0,1,1,1,0,1,0,1,0,1,1,1]) #initial state   
-    image_names = os.listdir("image_folder")
-
-
+    image_names = os.listdir("/image_folder")
     
     total_code = []
     for a in image_names:
         total_code.append(load_npy_file(a))
 
     total_code = np.array(total_code)
-    
-    output = xor_func(total_code[0], total_code[2])
-    print(output)
-    position = detect_segment16(output)
-    print(position)
 
-    potential_seed = total_code[0][:16]
-    print(potential_seed)
-    
-    
-    
+    visualization(image_names[1])
