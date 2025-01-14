@@ -2,10 +2,13 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from PIL import Image as im
+from tqdm import tqdm
+
+from collections import defaultdict
 
 def load_npy_file(file_path):
-    """
-    Loads and returns the array from a .npy file.
+    
+    """Loads and returns the array from a .npy file.
 
     :param file_path: Path to the .npy file
     :return: The array stored in the .npy file
@@ -29,18 +32,51 @@ def LFSR(N,c,seed):
         state = np.concatenate((np.array([next_bit]) , state[0:m-1]))
     return LFSR_output  
 
-def entropy(frequencies: Dict[int, float]) -> float:
+def entropy(frequencies) -> float:
     total_count = sum(frequencies.values())
     entropy_value = 0
 
     for _, freq in frequencies.items():
         p_i = freq / total_count
         if p_i > 0:
-            entropy_value -= p_i * log2(p_i)
+            entropy_value -= p_i * np.log2(p_i)
 
     return entropy_value
 
+def compute_entropy(code):
     
+    r_freq =defaultdict(int)
+    g_freq =defaultdict(int)
+    b_freq =defaultdict(int)
+
+    for pixel in code[0]:
+        r, g, b = pixel
+
+        rint = int(r)
+        gint = int(g)
+        bint = int(b)
+
+        r_freq[rint] += 1
+        g_freq[gint] += 1
+        b_freq[bint] += 1
+
+    entropy_r = entropy(r_freq)
+    entropy_g = entropy(g_freq)
+    entropy_b = entropy(b_freq)
+
+    # Sum up the entropies of each channel
+    total_entropy = (entropy_r + entropy_g + entropy_b)/3
+    print(total_entropy)
+    return total_entropy
+    
+def genSeed(num):
+    if 0 <= num <= 2**16 - 1:
+        binary = format(num, '016b')
+        arr16b = np.array([int(bit) for bit in binary], dtype=np.int8)
+        return arr16b
+    else:
+        raise ValueError("Out of range int")
+
 def xor_func(im_1,im_2):
 
     output = np.zeros(len(im_1))
@@ -57,24 +93,30 @@ def xor_func(im_1,im_2):
 
     return output
 
-def visualization(image):
+def visualize_image(image_bits):
     image_rec_plane = np.zeros((200,200,3),dtype=np.uint8)
 
     # From binary to image
-    image_binary_decrypt_plane = np.reshape(image, (200*200*8,3)) 
+    image_binary_decrypt_plane = np.reshape(image_bits, (200*200*8,3)) 
     for i_plane in range(0,3):
         ctr = 0
-        for i in range(0,np.size(np.size(image),0)):
-            for j in range(0, np.size(np.size(image),1)):
+        for i in range(0,200):
+            for j in range(0,200):
                 image_rec_plane[i,j,i_plane] = (np.sum(image_binary_decrypt_plane[ctr:ctr+8,i_plane]*np.array([128,64,32,16,8,4,2,1]))) 
                 ctr += 8
 
     # Recovering the image from the array of YCbCr
     image_rec = im.fromarray(image_rec_plane) 
-    # Plot the image 
-    plt.imshow(image_rec)
-    #plt.show()
     
+    return image_rec
+
+def xor_visualization(total_code):
+    f, axarr = plt.subplots(1,3)
+    axarr[0].imshow(visualize_image(np.logical_xor(total_code[0],total_code[1])))
+    axarr[1].imshow(visualize_image(np.logical_xor(total_code[0],total_code[2])))
+    axarr[2].imshow(visualize_image(np.logical_xor(total_code[1],total_code[2])))
+    plt.show()
+
     return None
 
 def detect_16(xor_output):
@@ -94,6 +136,23 @@ def detect_segment16(lis):
             return i
     return -1
 
+
+def decode(coded_image, state_equation, seed):
+
+    cypher_rec = LFSR(np.size(coded_image), state_equation,seed)
+
+    image_binary_decrypt = np.mod(coded_image+cypher_rec,2) 
+    image_rec_plane = np.zeros((200,200,3),dtype=np.uint8)
+    image_binary_decrypt_plane = np.reshape(image_binary_decrypt, (200*200*8,3)) 
+    for i_plane in range(0,3):     
+        ctr = 0
+        for i in range(0, 200):
+            for j in range(0, 200):
+                image_rec_plane[i,j,i_plane] = (np.sum(image_binary_decrypt_plane[ctr:ctr+8,i_plane]*np.array([128,64,32,16,8,4,2,1]))) 
+                ctr += 8
+
+    entropy_im = compute_entropy(image_rec_plane)
+    return image_rec_plane, entropy_im
 
 # Example usage:
 if __name__ == "__main__":
@@ -116,6 +175,27 @@ if __name__ == "__main__":
 
     potential_seed = total_code[0][:16]
     print(potential_seed)
+
+    output_image, _ = decode(total_code[0], c, potential_seed)
+
+    plt.imshow(output_image)
+    plt.show()
+
+
+    min_entropy = np.inf
+    opt_seed = None
+    for i in tqdm(range(int(2**16)), desc='Processing'):
+        try_seed = genSeed(i)
+
+        _, entropy_try = decode(total_code[0], c, try_seed)
+        if entropy_try < min_entropy:
+            min_entropy = entropy_try
+            opt_seed = try_seed
+
+        os.system('cls')
+        
     
     
     
+
+

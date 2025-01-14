@@ -89,7 +89,7 @@ def detect_segment16(lis):
 if __name__ == "__main__":
     c = np.array([0,0,0,1,0,0,0,0,0,0,0,0,1,0,1,1]) # connections vector
     seed = np.array([1,0,1,0,0,1,1,1,0,1,0,1,0,1,1,1]) #initial state   
-    image_names = os.listdir("/image_folder")
+    image_names = os.listdir("/")
     
     total_code = []
     for a in image_names:

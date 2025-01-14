@@ -12,20 +12,20 @@ Created on Tue Feb  1 11:09:50 2022
 
 @author: m.benammar
 """
+ 
 
-
-from matplotlib import pyplot as plt
+from matplotlib import pyplot   as plt
 import numpy as np 
 from PIL import Image as im   
 
 def LFSR(N,c,seed): 
     LFSR_output = np.zeros(N)
     m = np.size(c)
-    state = seed
+    state = seed  
     for i in range(0,N): 
         next_bit = np.mod(np.sum(c*state),2)
         LFSR_output[i] = state[m-1]
-        state = np.concatenate((np.array([next_bit]) , state[0:m-1]))
+        state = np.concatenate( (np.array([next_bit]) , state[0:m-1]))
     return LFSR_output  
 
 c = np.array([0,0,0,1,0,0,0,0,0,0,0,0,1,0,1,1]) # connections vector
@@ -40,7 +40,7 @@ seed = np.array([1,0,1,0,0,1,1,1,0,1,0,1,0,1,1,1]) #initial state
 img = im.open("ISAE_Logo_SEIS_clr_new.png") 
 img_eval= np.array(img) 
 image_trunc = img_eval 
-#pyplot.imshow(image_trunc) 
+# pyplot.imshow(image_trunc) 
 
 # Initializations 
 image_rec_plane = np.zeros((200,200,3),dtype=np.uint8)
@@ -51,7 +51,7 @@ for i_plane in range(0,3):
     
     # Select a plane  Y, Cb, or Cr 
     image_plane = image_trunc[:,:,i_plane]
-   
+    print(np.size(image_plane))
     # Image to binary
     ctr = 0
     for i in range(0,np.size(image_plane,0)):
@@ -94,5 +94,6 @@ for i_plane in range(0,3):
 # Recovering the image from the array of YCbCr
 image_rec = im.fromarray(image_rec_plane) 
 # Plot the image 
-plt.imshow(image_rec)
-#plt.show()
+plt.imshow(image_rec) 
+plt.show()
+ 
