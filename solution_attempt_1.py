@@ -189,10 +189,11 @@ if __name__ == "__main__":
     for i in tqdm(range(1,int(2**16)), position=0, leave=True):
         try_seed = genSeed(i)
 
-        _, entropy_try = decode(total_code[0], c, try_seed, reduction=40)
-        if entropy_try < min_entropy:
+        _, entropy_try = decode(total_code[0], c, try_seed, reduction=10)
+        if entropy_try < 4:
             min_entropy = entropy_try
             opt_seed = try_seed
+            break
        
         #os.system('cls')
     print(opt_seed)
