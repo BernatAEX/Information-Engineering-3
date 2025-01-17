@@ -173,7 +173,7 @@ if __name__ == "__main__":
     position = detect_segment16(output)
     print(position)
 
-    potential_seed = total_code[0][:16]
+    #potential_seed = total_code[0][:16]
     potential_seed = np.array([0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1])
     #potential_seed = np.array([0, 0, 0, 0, 0, 0, 1, 1,0, 1, 1, 1, 0, 1, 0, 1])
     print(potential_seed)
